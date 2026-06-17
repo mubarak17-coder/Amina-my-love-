@@ -36,10 +36,12 @@
     --font-hand:    'Caveat', cursive;
 
     --ease-soft:    cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-smooth:  cubic-bezier(0.16, 1, 0.3, 1);   /* мягкий expo-out для слайдов */
+    --ease-glide:   cubic-bezier(0.65, 0, 0.35, 1);  /* плавный sigmoid для ховеров */
     --ease-back:    cubic-bezier(0.34, 1.56, 0.64, 1);
     --dur-fast:     0.4s;
     --dur-med:      0.6s;
-    --dur-slow:     0.9s;
+    --dur-slow:     1s;
 
     --radius:       22px;
     --shadow-soft:  0 10px 30px -10px rgba(194, 92, 117, 0.25),
@@ -144,13 +146,14 @@
     text-align: center;
     opacity: 0;
     visibility: hidden;
-    transform: translate3d(var(--enter-x, 0), 20px, 0) scale(0.96);
-    filter: blur(6px);
+    transform: translate3d(var(--enter-x, 0), 28px, 0) scale(0.94);
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     transition:
-      opacity var(--dur-med) var(--ease-soft),
-      transform var(--dur-med) var(--ease-soft),
-      filter var(--dur-med) var(--ease-soft),
-      visibility 0s linear var(--dur-med);
+      opacity 0.7s var(--ease-smooth),
+      transform 0.85s var(--ease-smooth),
+      visibility 0s linear 0.7s;
   }
   /* Резерв снизу под навигацию — но не на обложке, где нав скрыта */
   .slide:not([data-slide="cover"]) .stage {
@@ -160,27 +163,26 @@
     opacity: 1;
     visibility: visible;
     transform: translate3d(0, 0, 0) scale(1);
-    filter: blur(0);
     transition:
-      opacity var(--dur-slow) var(--ease-soft),
-      transform var(--dur-slow) var(--ease-soft),
-      filter var(--dur-slow) var(--ease-soft),
+      opacity 0.9s var(--ease-smooth),
+      transform var(--dur-slow) var(--ease-smooth),
       visibility 0s linear 0s;
   }
 
   /* появление контента «по очереди» (stagger) при активации */
   .slide.active .stagger > * {
-    animation: rise 0.8s var(--ease-soft) both;
+    animation: rise 1.1s var(--ease-smooth) both;
+    will-change: transform, opacity;
   }
-  .slide.active .stagger > *:nth-child(1) { animation-delay: 0.05s; }
-  .slide.active .stagger > *:nth-child(2) { animation-delay: 0.20s; }
-  .slide.active .stagger > *:nth-child(3) { animation-delay: 0.35s; }
-  .slide.active .stagger > *:nth-child(4) { animation-delay: 0.50s; }
-  .slide.active .stagger > *:nth-child(5) { animation-delay: 0.65s; }
-  .slide.active .stagger > *:nth-child(6) { animation-delay: 0.80s; }
+  .slide.active .stagger > *:nth-child(1) { animation-delay: 0.10s; }
+  .slide.active .stagger > *:nth-child(2) { animation-delay: 0.22s; }
+  .slide.active .stagger > *:nth-child(3) { animation-delay: 0.34s; }
+  .slide.active .stagger > *:nth-child(4) { animation-delay: 0.46s; }
+  .slide.active .stagger > *:nth-child(5) { animation-delay: 0.58s; }
+  .slide.active .stagger > *:nth-child(6) { animation-delay: 0.70s; }
   @keyframes rise {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translate3d(0, 26px, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
   }
 
   /* ============================================================
@@ -281,11 +283,12 @@
     cursor: pointer;
     box-shadow: var(--shadow-soft);
     transition:
-      transform 0.2s var(--ease-soft),
-      box-shadow 0.3s var(--ease-soft),
-      filter 0.3s var(--ease-soft);
+      transform 0.45s var(--ease-glide),
+      box-shadow 0.5s var(--ease-glide),
+      filter 0.4s var(--ease-glide);
     letter-spacing: 0.02em;
     margin-top: 8px;
+    will-change: transform;
   }
   .btn:hover { filter: brightness(1.05); }
   .btn:active { transform: scale(0.96); box-shadow: 0 4px 12px -4px rgba(194, 92, 117, 0.4); }
@@ -335,9 +338,13 @@
     color: var(--rose);
     line-height: 1;
     font-variant-numeric: tabular-nums;
-    transition: transform 0.3s var(--ease-back);
+    transition: transform 0.5s var(--ease-back), color 0.5s var(--ease-glide);
+    will-change: transform;
   }
-  .timer-num.tick { transform: scale(1.15); }
+  .timer-num.tick {
+    transform: scale(1.15);
+    color: var(--pink-400);
+  }
   .timer-label {
     font-size: 0.7rem;
     text-transform: uppercase;
@@ -382,8 +389,9 @@
     background-position: center;
     background-repeat: no-repeat;
     opacity: 0;
-    transform: scale(1.05);
-    transition: opacity 0.7s var(--ease-soft), transform 6s ease-out;
+    transform: scale(1.06);
+    will-change: opacity, transform;
+    transition: opacity 1.1s var(--ease-smooth), transform 7s ease-out;
   }
   .photo.active {
     opacity: 1;
@@ -412,7 +420,7 @@
     min-height: 2.4em;
     text-align: center;
     line-height: 1.3;
-    transition: opacity 0.4s var(--ease-soft);
+    transition: opacity 0.7s var(--ease-smooth);
   }
   .gallery-dots {
     display: flex;
@@ -424,10 +432,13 @@
     height: 7px;
     border-radius: 50%;
     background: var(--pink-100);
-    transition: background 0.3s, transform 0.3s;
+    transition:
+      background 0.6s var(--ease-glide),
+      transform 0.6s var(--ease-back);
     cursor: pointer;
     border: none;
     padding: 0;
+    will-change: transform;
   }
   .gallery-dot.active {
     background: var(--rose);
@@ -450,7 +461,10 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 12px -4px rgba(194, 92, 117, 0.2);
-    transition: transform 0.2s;
+    transition:
+      transform 0.4s var(--ease-glide),
+      box-shadow 0.5s var(--ease-glide);
+    will-change: transform;
   }
   .gallery-arrow:active { transform: scale(0.92); }
 
@@ -566,7 +580,11 @@
     align-items: center;
     justify-content: center;
     box-shadow: var(--shadow-soft);
-    transition: transform 0.2s, opacity 0.3s;
+    transition:
+      transform 0.4s var(--ease-glide),
+      box-shadow 0.5s var(--ease-glide),
+      opacity 0.5s var(--ease-glide);
+    will-change: transform;
   }
   .nav-arrow:active { transform: scale(0.92); }
   .nav-arrow:disabled {
@@ -599,10 +617,14 @@
     height: 7px;
     border-radius: 50%;
     background: var(--pink-100);
-    transition: background 0.4s, transform 0.4s;
+    transition:
+      background 0.6s var(--ease-glide),
+      transform 0.6s var(--ease-back),
+      box-shadow 0.6s var(--ease-glide);
     border: none;
     padding: 0;
     cursor: pointer;
+    will-change: transform;
   }
   .progress-dot.active {
     background: var(--rose);
@@ -708,14 +730,14 @@
     font-size: 22px;
     color: var(--rose);
     transform: translate(-50%, -50%);
-    animation: tapHeartRise 1.4s ease-out forwards;
+    animation: tapHeartRise 1.6s var(--ease-smooth) forwards;
     will-change: transform, opacity;
     text-shadow: 0 2px 8px rgba(194, 92, 117, 0.4);
   }
   @keyframes tapHeartRise {
     0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
-    20%  { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
-    100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% - 90px)) scale(0.7) rotate(var(--rot, 0deg)); }
+    15%  { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+    100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% - 110px)) scale(0.7) rotate(var(--rot, 0deg)); }
   }
 
   /* Дополнительный «дыхательный» glow за большим сердцем */
@@ -1069,7 +1091,7 @@ function updateTimer() {
     if (lastValues[key] !== val) {
       el.textContent = key === 'd' ? val : pad(val);
       el.classList.add('tick');
-      setTimeout(() => el.classList.remove('tick'), 220);
+      setTimeout(() => el.classList.remove('tick'), 380);
       lastValues[key] = val;
     }
   }
@@ -1158,7 +1180,7 @@ function spawnTapHeart(x, y) {
   heart.style.fontSize = (18 + Math.random() * 12) + 'px';
   heart.style.color = Math.random() > 0.5 ? 'var(--rose)' : 'var(--pink-300)';
   document.body.appendChild(heart);
-  setTimeout(() => heart.remove(), 1500);
+  setTimeout(() => heart.remove(), 1700);
 }
 document.addEventListener('click', (e) => {
   // не плодим сердечки на кнопках/ссылках

@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#fdf2f3" />
+<title>Аминося — 1 год вместе ♡</title>
+
+<!-- Google Fonts: заголовки — Cormorant Garamond, текст — Manrope, подписи — Caveat -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ============================================================
+     ПЕРЕМЕННЫЕ — палитра, шрифты, тайминги
+     Меняй здесь, чтобы поменять цвета/шрифты сразу везде.
+     ============================================================ */
+  :root {
+    --cream:        #fff8f4;
+    --cream-soft:   #fdf2ec;
+    --pink-50:      #fde9ee;
+    --pink-100:     #f9d5dd;
+    --pink-200:     #f3b8c5;
+    --pink-300:     #e89aab;
+    --pink-400:     #d97a91;
+    --rose:         #c25c75;
+    --ink:          #4a2f36;
+    --ink-soft:     #6b4853;
+    --gold:         #c89b6c;
+
+    --font-serif:   'Cormorant Garamond', 'Times New Roman', serif;
+    --font-sans:    'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-hand:    'Caveat', cursive;
+
+    --ease-soft:    cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-back:    cubic-bezier(0.34, 1.56, 0.64, 1);
+    --dur-fast:     0.4s;
+    --dur-med:      0.6s;
+    --dur-slow:     0.9s;
+
+    --radius:       22px;
+    --shadow-soft:  0 10px 30px -10px rgba(194, 92, 117, 0.25),
+                    0 4px 12px -4px rgba(194, 92, 117, 0.15);
+  }
+
+  /* ============================================================
+     БАЗА
+     ============================================================ */
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-sans);
+    color: var(--ink);
+    background:
+      radial-gradient(ellipse at top, #fff5f0 0%, var(--cream-soft) 40%, var(--pink-50) 100%);
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* безопасные отступы под нотчи */
+  .stage {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding:
+      max(env(safe-area-inset-top), 16px)
+      max(env(safe-area-inset-right), 20px)
+      max(env(safe-area-inset-bottom), 16px)
+      max(env(safe-area-inset-left), 20px);
+    overflow: hidden;
+  }
+
+  /* ============================================================
+     ФОН — парящие сердечки и лепестки
+     ============================================================ */
+  .bg-decor {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .petal {
+    position: absolute;
+    top: -10vh;
+    font-size: 18px;
+    color: var(--pink-200);
+    opacity: 0;
+    animation: floatDown linear infinite;
+    will-change: transform, opacity;
+    user-select: none;
+  }
+  @keyframes floatDown {
+    0%   { transform: translate3d(0, -10vh, 0) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.55; }
+    50%  { transform: translate3d(40px, 50vh, 0) rotate(180deg); opacity: 0.5; }
+    100% { transform: translate3d(-30px, 110vh, 0) rotate(360deg); opacity: 0; }
+  }
+
+  /* мягкое световое пятно по центру */
+  .glow {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.6) 0%, transparent 50%),
+      radial-gradient(circle at 80% 90%, rgba(243, 184, 197, 0.25) 0%, transparent 45%);
+  }
+
+  /* ============================================================
+     СЛАЙДЫ
+     ============================================================ */
+  .slides {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.98);
+    transition:
+      opacity var(--dur-med) var(--ease-soft),
+      transform var(--dur-med) var(--ease-soft),
+      visibility 0s linear var(--dur-med);
+    padding: clamp(24px, 6vw, 48px);
+    padding-bottom: 100px; /* место под навигацию */
+  }
+  .slide.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    transition:
+      opacity var(--dur-slow) var(--ease-soft),
+      transform var(--dur-slow) var(--ease-soft),
+      visibility 0s linear 0s;
+  }
+
+  /* появление контента «по очереди» (stagger) при активации */
+  .slide.active .stagger > * {
+    animation: rise 0.8s var(--ease-soft) both;
+  }
+  .slide.active .stagger > *:nth-child(1) { animation-delay: 0.05s; }
+  .slide.active .stagger > *:nth-child(2) { animation-delay: 0.20s; }
+  .slide.active .stagger > *:nth-child(3) { animation-delay: 0.35s; }
+  .slide.active .stagger > *:nth-child(4) { animation-delay: 0.50s; }
+  .slide.active .stagger > *:nth-child(5) { animation-delay: 0.65s; }
+  .slide.active .stagger > *:nth-child(6) { animation-delay: 0.80s; }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============================================================
+     ТИПОГРАФИКА
+     ============================================================ */
+  h1, h2, h3 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  h1 {
+    font-size: clamp(2.4rem, 11vw, 4.5rem);
+    font-style: italic;
+  }
+  h2 {
+    font-size: clamp(2rem, 8vw, 3.4rem);
+  }
+  h3 {
+    font-size: clamp(1.4rem, 5.5vw, 2rem);
+  }
+  p {
+    font-family: var(--font-sans);
+    font-size: clamp(1rem, 4.2vw, 1.15rem);
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin: 0;
+    font-weight: 300;
+  }
+  .hand {
+    font-family: var(--font-hand);
+    color: var(--rose);
+    font-size: clamp(1.4rem, 5.5vw, 1.8rem);
+    font-weight: 700;
+  }
+  .accent {
+    color: var(--rose);
+    font-style: italic;
+  }
+  .small {
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    opacity: 0.85;
+  }
+
+  /* ============================================================
+     ОБЛОЖКА
+     ============================================================ */
+  .cover-content {
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+  .heart-big {
+    width: clamp(80px, 22vw, 110px);
+    height: clamp(80px, 22vw, 110px);
+    display: inline-block;
+    color: var(--pink-300);
+    filter: drop-shadow(0 6px 18px rgba(217, 122, 145, 0.4));
+    animation: heartPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes heartPulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.08); }
+  }
+  .cover-names {
+    font-family: var(--font-hand);
+    color: var(--rose);
+    font-size: clamp(1.5rem, 6vw, 2rem);
+    font-weight: 700;
+    margin-top: 4px;
+  }
+  .cover-sub {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: clamp(1rem, 4vw, 1.2rem);
+  }
+
+  /* ============================================================
+     КНОПКИ
+     ============================================================ */
+  .btn {
+    appearance: none;
+    border: none;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 16px 36px;
+    min-height: 52px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--pink-300), var(--rose));
+    color: white;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    transition:
+      transform 0.2s var(--ease-soft),
+      box-shadow 0.3s var(--ease-soft),
+      filter 0.3s var(--ease-soft);
+    letter-spacing: 0.02em;
+    margin-top: 8px;
+  }
+  .btn:hover { filter: brightness(1.05); }
+  .btn:active { transform: scale(0.96); box-shadow: 0 4px 12px -4px rgba(194, 92, 117, 0.4); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--rose);
+    border: 1.5px solid var(--pink-200);
+    box-shadow: none;
+  }
+  .btn-ghost:active { background: var(--pink-50); }
+
+  /* ============================================================
+     ТАЙМЕР
+     ============================================================ */
+  .timer-wrap {
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  .timer-title { margin-bottom: 4px; }
+  .timer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    width: 100%;
+  }
+  .timer-cell {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(243, 184, 197, 0.4);
+    border-radius: var(--radius);
+    padding: 14px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    box-shadow: var(--shadow-soft);
+  }
+  .timer-num {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: clamp(1.6rem, 8vw, 2.4rem);
+    color: var(--rose);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    transition: transform 0.3s var(--ease-back);
+  }
+  .timer-num.tick { transform: scale(1.15); }
+  .timer-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-soft);
+    opacity: 0.8;
+  }
+  .timer-caption {
+    font-family: var(--font-hand);
+    color: var(--rose);
+    font-size: clamp(1.2rem, 5vw, 1.5rem);
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  /* ============================================================
+     ГАЛЕРЕЯ
+     ============================================================ */
+  .gallery-wrap {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+  .gallery-title { margin-bottom: 4px; }
+  .gallery {
+    position: relative;
+    width: 100%;
+    max-width: 360px;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+    background: var(--pink-50);
+  }
+  .photo {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transform: scale(1.05);
+    transition: opacity 0.7s var(--ease-soft), transform 6s ease-out;
+  }
+  .photo.active {
+    opacity: 1;
+    transform: scale(1);
+  }
+  /* плейсхолдер пока нет фото */
+  .photo.placeholder {
+    background:
+      linear-gradient(135deg, var(--pink-100), var(--cream));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-hand);
+    color: var(--rose);
+    font-size: 1.4rem;
+    opacity: 1;
+    transform: scale(1);
+  }
+  .photo.placeholder::after {
+    content: '♡ наше фото ♡';
+  }
+  .caption {
+    font-family: var(--font-hand);
+    color: var(--rose);
+    font-size: clamp(1.2rem, 5vw, 1.5rem);
+    min-height: 2.4em;
+    text-align: center;
+    line-height: 1.3;
+    transition: opacity 0.4s var(--ease-soft);
+  }
+  .gallery-dots {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+  .gallery-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--pink-100);
+    transition: background 0.3s, transform 0.3s;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+  }
+  .gallery-dot.active {
+    background: var(--rose);
+    transform: scale(1.4);
+  }
+  .gallery-controls {
+    display: flex;
+    gap: 12px;
+  }
+  .gallery-arrow {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid var(--pink-100);
+    color: var(--rose);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px -4px rgba(194, 92, 117, 0.2);
+    transition: transform 0.2s;
+  }
+  .gallery-arrow:active { transform: scale(0.92); }
+
+  /* ============================================================
+     СЛАЙДЫ-ПРИЗНАНИЯ
+     ============================================================ */
+  .message-content {
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .message-quote {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(1.6rem, 7vw, 2.4rem);
+    line-height: 1.35;
+    color: var(--ink);
+  }
+  .message-quote .accent { display: inline; }
+  .message-author {
+    font-family: var(--font-hand);
+    color: var(--rose);
+    font-size: clamp(1.2rem, 5vw, 1.5rem);
+  }
+  .message-icon {
+    color: var(--pink-300);
+    font-size: 2rem;
+    opacity: 0.7;
+  }
+
+  /* ============================================================
+     ФИНАЛ
+     ============================================================ */
+  .final-content {
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .final-title {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(2.5rem, 12vw, 4.5rem);
+    color: var(--rose);
+    line-height: 1.05;
+  }
+  .final-sub {
+    font-family: var(--font-hand);
+    font-size: clamp(1.6rem, 6vw, 2rem);
+    color: var(--ink);
+  }
+
+  /* конфетти из лепестков */
+  .confetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+    overflow: hidden;
+  }
+  .confetti-piece {
+    position: absolute;
+    top: -20px;
+    font-size: 20px;
+    animation: confettiFall 4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+  @keyframes confettiFall {
+    0%   { transform: translate3d(0, -10vh, 0) rotate(0deg); opacity: 1; }
+    100% { transform: translate3d(var(--dx, 60px), 110vh, 0) rotate(720deg); opacity: 0; }
+  }
+
+  /* ============================================================
+     НАВИГАЦИЯ (кнопки + точки)
+     ============================================================ */
+  .nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    padding:
+      14px
+      max(env(safe-area-inset-right), 20px)
+      max(env(safe-area-inset-bottom), 18px)
+      max(env(safe-area-inset-left), 20px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(to top, rgba(255, 248, 244, 0.92), rgba(255, 248, 244, 0));
+    pointer-events: none;
+  }
+  .nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    pointer-events: auto;
+  }
+  .nav-arrow {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid var(--pink-100);
+    color: var(--rose);
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.2s, opacity 0.3s;
+  }
+  .nav-arrow:active { transform: scale(0.92); }
+  .nav-arrow:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  .nav-next {
+    min-height: 46px;
+    padding: 0 26px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--pink-300), var(--rose));
+    color: white;
+    border: none;
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.2s var(--ease-soft);
+    letter-spacing: 0.02em;
+  }
+  .nav-next:active { transform: scale(0.96); }
+  .progress {
+    display: flex;
+    gap: 7px;
+    pointer-events: auto;
+  }
+  .progress-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--pink-100);
+    transition: background 0.4s, transform 0.4s;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+  .progress-dot.active {
+    background: var(--rose);
+    transform: scale(1.5);
+  }
+
+  /* скрыть навигацию на обложке */
+  .nav.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+  }
+
+  /* ============================================================
+     УВАЖЕНИЕ К PREFERS-REDUCED-MOTION
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.1s !important;
+    }
+    .petal { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Декор: фоновые сердечки и лепестки -->
+<div class="bg-decor" id="bgDecor" aria-hidden="true"></div>
+<div class="glow" aria-hidden="true"></div>
+
+<!-- Слайды -->
+<main class="slides" id="slides">
+
+  <!-- ============== СЛАЙД 1: ОБЛОЖКА ============== -->
+  <section class="slide active" data-slide="cover">
+    <div class="stage">
+      <div class="cover-content stagger">
+        <svg class="heart-big" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 21s-7-4.35-9.5-9.5C.5 7 3.5 3 7.5 3c2 0 3.5 1 4.5 2.5C13 4 14.5 3 16.5 3 20.5 3 23.5 7 21.5 11.5 19 16.65 12 21 12 21z"/>
+        </svg>
+        <h1>1 год вместе</h1>
+        <div class="cover-names" id="coverNames">Ерося &nbsp;♡&nbsp; Аминося</div>
+        <div class="cover-sub" id="coverDate">с 18 июня 2025</div>
+        <button class="btn" id="openBtn">Открыть</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== СЛАЙД 2: ТАЙМЕР ============== -->
+  <section class="slide" data-slide="timer">
+    <div class="stage">
+      <div class="timer-wrap stagger">
+        <h2 class="timer-title">Сколько мы <span class="accent">вместе</span></h2>
+        <div class="timer-grid" id="timerGrid">
+          <div class="timer-cell">
+            <div class="timer-num" id="t-days">0</div>
+            <div class="timer-label">дней</div>
+          </div>
+          <div class="timer-cell">
+            <div class="timer-num" id="t-hours">0</div>
+            <div class="timer-label">часов</div>
+          </div>
+          <div class="timer-cell">
+            <div class="timer-num" id="t-mins">0</div>
+            <div class="timer-label">минут</div>
+          </div>
+          <div class="timer-cell">
+            <div class="timer-num" id="t-secs">0</div>
+            <div class="timer-label">секунд</div>
+          </div>
+        </div>
+        <div class="timer-caption" id="timerCaption">
+          и каждая секунда — моя любимая ♡<br>
+          <span style="opacity: 0.7; font-size: 0.85em;">(да, я считал. да, я зануда. да, ты меня терпишь)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== СЛАЙД 3: ГАЛЕРЕЯ ============== -->
+  <section class="slide" data-slide="gallery">
+    <div class="stage">
+      <div class="gallery-wrap stagger">
+        <h2 class="gallery-title">Наши <span class="accent">моменты</span></h2>
+        <div class="gallery" id="gallery" aria-live="polite">
+          <!-- фото подставляются из JS -->
+        </div>
+        <div class="caption" id="galleryCaption"></div>
+        <div class="gallery-dots" id="galleryDots"></div>
+        <div class="gallery-controls">
+          <button class="gallery-arrow" id="galPrev" aria-label="Предыдущее фото">‹</button>
+          <button class="gallery-arrow" id="galNext" aria-label="Следующее фото">›</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== СЛАЙДЫ 4-7: ПРИЗНАНИЯ ============== -->
+  <!-- слайды генерируются из config.messages в JS, но шаблон ниже -->
+
+  <!-- ============== ФИНАЛ ============== -->
+  <section class="slide" data-slide="final">
+    <div class="stage">
+      <div class="final-content stagger">
+        <div style="font-size: 3rem;">💗</div>
+        <div class="final-title">Я люблю тебя</div>
+        <div class="final-sub">С годовщиной, Аминося</div>
+        <p style="margin-top: 8px;">Спасибо, что ты есть. И за этот год. И за все, что впереди.</p>
+        <button class="btn btn-ghost" id="restartBtn">Начать заново</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Конфетти-контейнер для финала -->
+<div class="confetti" id="confetti" aria-hidden="true"></div>
+
+<!-- Навигация -->
+<nav class="nav hidden" id="nav" aria-label="Навигация по слайдам">
+  <div class="nav-row">
+    <button class="nav-arrow" id="prevBtn" aria-label="Назад">‹</button>
+    <button class="nav-next" id="nextBtn">Дальше</button>
+    <button class="nav-arrow" id="nextArrow" aria-label="Вперёд">›</button>
+  </div>
+  <div class="progress" id="progress" role="tablist"></div>
+</nav>
+
+<script>
+/* ================================================================
+   КОНФИГ — меняй ТОЛЬКО здесь: тексты, имена, дату, фото, подписи.
+   ================================================================ */
+const config = {
+  // Имена и дата начала отношений (формат: YYYY-MM-DD)
+  myName: 'Ерося',
+  herName: 'Аминося',
+  startDate: '2025-06-18', // ← дата начала. Таймер считает от этого момента.
+
+  // Фотографии для галереи.
+  // Положи файлы рядом с index.html и укажи имена ниже.
+  // Если файла нет — покажется плейсхолдер «♡ наше фото ♡».
+  // Подписи — смешанные: нежные и с лёгким юмором.
+  photos: [
+    { src: 'photo1.jpg', caption: 'наш первый день — я уже знал' },
+    { src: 'photo2.jpg', caption: 'ты смеёшься — мой любимый звук' },
+    { src: 'photo3.jpg', caption: 'и да, я опять стащил твою кофту' },
+    { src: 'photo4.jpg', caption: 'мы — это уютно' },
+    { src: 'photo5.jpg', caption: 'ты + я = маленькая вселенная' },
+  ],
+
+  // Признания/мысли — отдельные слайды. Добавляй/убирай сколько хочешь.
+  messages: [
+    {
+      text: 'Ты — мой самый <span class="accent">любимый человек</span> на всей планете. И в нескольких параллельных вселенных, на всякий случай.',
+      author: '— твой Ерося',
+    },
+    {
+      text: 'Мне с тобой <span class="accent">спокойно</span>. И смешно. И тепло. И ещё миллион всего, на что нет слов.',
+      author: '— честное признание',
+    },
+    {
+      text: 'За этот год ты научила меня, что любить — это <span class="accent">не страшно</span>, а уютно.',
+      author: '— спасибо тебе',
+    },
+    {
+      text: 'Ты <span class="accent">красивая</span>. Не потому что я обязан так говорить. А потому что это правда.',
+      author: '— факт ♡',
+    },
+  ],
+};
+
+/* ================================================================
+   КОД — обычно менять не нужно.
+   ================================================================ */
+
+// --- Подставляем имена и дату на обложку ---
+document.getElementById('coverNames').textContent = `${config.myName}  ♡  ${config.herName}`;
+const startDate = new Date(config.startDate + 'T00:00:00');
+const dateFmt = startDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+document.getElementById('coverDate').textContent = `с ${dateFmt}`;
+
+// --- Генерируем слайды-признания из config.messages и вставляем перед финалом ---
+const slidesContainer = document.getElementById('slides');
+const finalSlide = slidesContainer.querySelector('[data-slide="final"]');
+config.messages.forEach((msg, i) => {
+  const section = document.createElement('section');
+  section.className = 'slide';
+  section.dataset.slide = `msg-${i}`;
+  section.innerHTML = `
+    <div class="stage">
+      <div class="message-content stagger">
+        <div class="message-icon">❀</div>
+        <div class="message-quote">${msg.text}</div>
+        <div class="message-author">${msg.author}</div>
+      </div>
+    </div>
+  `;
+  slidesContainer.insertBefore(section, finalSlide);
+});
+
+// --- Список слайдов ---
+const slides = Array.from(document.querySelectorAll('.slide'));
+let currentIdx = 0;
+
+// --- Прогресс-точки ---
+const progress = document.getElementById('progress');
+slides.forEach((_, i) => {
+  const dot = document.createElement('button');
+  dot.className = 'progress-dot';
+  dot.setAttribute('role', 'tab');
+  dot.setAttribute('aria-label', `Слайд ${i + 1}`);
+  dot.addEventListener('click', () => goTo(i));
+  progress.appendChild(dot);
+});
+const progressDots = Array.from(progress.children);
+
+// --- Навигация ---
+const nav = document.getElementById('nav');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const nextArrow = document.getElementById('nextArrow');
+
+function updateUI() {
+  slides.forEach((s, i) => s.classList.toggle('active', i === currentIdx));
+  progressDots.forEach((d, i) => d.classList.toggle('active', i === currentIdx));
+  prevBtn.disabled = currentIdx === 0;
+  nextBtn.disabled = currentIdx === slides.length - 1;
+  nextArrow.disabled = currentIdx === slides.length - 1;
+  // на обложке скрываем нижнюю навигацию
+  nav.classList.toggle('hidden', currentIdx === 0);
+  // на финале запускаем конфетти один раз
+  if (slides[currentIdx].dataset.slide === 'final') {
+    launchConfetti();
+  }
+}
+
+function goTo(i) {
+  if (i < 0 || i >= slides.length) return;
+  currentIdx = i;
+  updateUI();
+}
+function next() { goTo(currentIdx + 1); }
+function prev() { goTo(currentIdx - 1); }
+
+prevBtn.addEventListener('click', prev);
+nextBtn.addEventListener('click', next);
+nextArrow.addEventListener('click', next);
+document.getElementById('openBtn').addEventListener('click', next);
+document.getElementById('restartBtn').addEventListener('click', () => goTo(0));
+
+// --- Клавиатура: стрелки ---
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+});
+
+// --- Свайпы на телефоне ---
+let touchStartX = 0, touchStartY = 0, touchEndX = 0, touchEndY = 0;
+document.addEventListener('touchstart', (e) => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+document.addEventListener('touchend', (e) => {
+  touchEndX = e.changedTouches[0].screenX;
+  touchEndY = e.changedTouches[0].screenY;
+  const dx = touchEndX - touchStartX;
+  const dy = touchEndY - touchStartY;
+  // игнорируем вертикальные жесты и слабые свайпы
+  if (Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx)) return;
+  if (dx < 0) next();
+  else prev();
+}, { passive: true });
+
+// --- Таймер: считаем сколько вместе ---
+const tDays = document.getElementById('t-days');
+const tHours = document.getElementById('t-hours');
+const tMins = document.getElementById('t-mins');
+const tSecs = document.getElementById('t-secs');
+let lastValues = { d: -1, h: -1, m: -1, s: -1 };
+
+function pad(n) { return String(n).padStart(2, '0'); }
+
+function updateTimer() {
+  const now = new Date();
+  let diff = Math.max(0, now - startDate); // мс
+  const days = Math.floor(diff / 86400000); diff -= days * 86400000;
+  const hours = Math.floor(diff / 3600000); diff -= hours * 3600000;
+  const mins = Math.floor(diff / 60000);    diff -= mins * 60000;
+  const secs = Math.floor(diff / 1000);
+
+  function set(el, val, key) {
+    if (lastValues[key] !== val) {
+      el.textContent = key === 'd' ? val : pad(val);
+      el.classList.add('tick');
+      setTimeout(() => el.classList.remove('tick'), 220);
+      lastValues[key] = val;
+    }
+  }
+  set(tDays, days, 'd');
+  set(tHours, hours, 'h');
+  set(tMins, mins, 'm');
+  set(tSecs, secs, 's');
+}
+updateTimer();
+setInterval(updateTimer, 1000);
+
+// --- Галерея ---
+const galleryEl = document.getElementById('gallery');
+const galleryCap = document.getElementById('galleryCaption');
+const galleryDots = document.getElementById('galleryDots');
+let galleryIdx = 0;
+
+// проверяем, есть ли фото (если нет — плейсхолдер)
+function imageExists(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = src;
+  });
+}
+
+// строим галерею
+async function buildGallery() {
+  for (let i = 0; i < config.photos.length; i++) {
+    const photo = config.photos[i];
+    const div = document.createElement('div');
+    div.className = 'photo';
+    if (i === 0) div.classList.add('active');
+    galleryEl.appendChild(div);
+
+    // проверяем фото в фоне
+    imageExists(photo.src).then((ok) => {
+      if (ok) {
+        div.style.backgroundImage = `url("${photo.src}")`;
+      } else {
+        div.classList.add('placeholder');
+      }
+    });
+
+    const dot = document.createElement('button');
+    dot.className = 'gallery-dot';
+    if (i === 0) dot.classList.add('active');
+    dot.setAttribute('aria-label', `Фото ${i + 1}`);
+    dot.addEventListener('click', () => showPhoto(i));
+    galleryDots.appendChild(dot);
+  }
+  galleryCap.textContent = config.photos[0]?.caption || '';
+}
+buildGallery();
+
+function showPhoto(i) {
+  if (i < 0) i = config.photos.length - 1;
+  if (i >= config.photos.length) i = 0;
+  galleryIdx = i;
+  Array.from(galleryEl.children).forEach((c, idx) => c.classList.toggle('active', idx === i));
+  Array.from(galleryDots.children).forEach((c, idx) => c.classList.toggle('active', idx === i));
+  // плавная смена подписи
+  galleryCap.style.opacity = '0';
+  setTimeout(() => {
+    galleryCap.textContent = config.photos[i].caption;
+    galleryCap.style.opacity = '1';
+  }, 200);
+}
+document.getElementById('galPrev').addEventListener('click', () => showPhoto(galleryIdx - 1));
+document.getElementById('galNext').addEventListener('click', () => showPhoto(galleryIdx + 1));
+
+// --- Фон: парящие сердечки/лепестки ---
+const bg = document.getElementById('bgDecor');
+const symbols = ['♡', '✿', '❀', '♥'];
+const PETAL_COUNT = window.matchMedia('(max-width: 600px)').matches ? 12 : 22;
+for (let i = 0; i < PETAL_COUNT; i++) {
+  const p = document.createElement('span');
+  p.className = 'petal';
+  p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+  p.style.left = Math.random() * 100 + 'vw';
+  p.style.fontSize = (12 + Math.random() * 18) + 'px';
+  p.style.color = Math.random() > 0.5 ? 'var(--pink-200)' : 'var(--pink-300)';
+  p.style.animationDuration = (10 + Math.random() * 16) + 's';
+  p.style.animationDelay = -Math.random() * 20 + 's';
+  bg.appendChild(p);
+}
+
+// --- Конфетти на финале ---
+const confettiBox = document.getElementById('confetti');
+let confettiRan = false;
+function launchConfetti() {
+  if (confettiRan) return;
+  confettiRan = true;
+  const COUNT = 60;
+  for (let i = 0; i < COUNT; i++) {
+    const piece = document.createElement('span');
+    piece.className = 'confetti-piece';
+    piece.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    piece.style.left = Math.random() * 100 + 'vw';
+    piece.style.color = ['#e89aab', '#f3b8c5', '#c25c75', '#c89b6c'][Math.floor(Math.random() * 4)];
+    piece.style.fontSize = (16 + Math.random() * 18) + 'px';
+    piece.style.setProperty('--dx', (Math.random() * 200 - 100) + 'px');
+    piece.style.animationDelay = Math.random() * 1.5 + 's';
+    piece.style.animationDuration = (3 + Math.random() * 2.5) + 's';
+    confettiBox.appendChild(piece);
+    // убираем через 6с, чтобы не копились
+    setTimeout(() => piece.remove(), 7000);
+  }
+  // даём возможность запустить ещё раз при следующем заходе на финал
+  setTimeout(() => { confettiRan = false; }, 7000);
+}
+
+// --- Стартовое состояние ---
+updateUI();
+</script>
+
+</body>
+</html>

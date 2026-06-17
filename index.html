@@ -673,8 +673,40 @@
           </div>
         </div>
         <div class="timer-caption" id="timerCaption">
-          и каждая секунда — моя любимая ♡<br>
-          <span style="opacity: 0.7; font-size: 0.85em;">(да, я считал. да, я зануда. да, ты меня терпишь)</span>
+          и каждая секунда — моя любимая ♡
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== ИНТРО: "Давай вспомним наш год" ============== -->
+  <section class="slide" data-slide="memory-intro">
+    <div class="stage">
+      <div class="cover-content stagger">
+        <div style="font-size: 2.4rem; color: var(--pink-300); filter: drop-shadow(0 4px 12px rgba(217, 122, 145, 0.3));">✿</div>
+        <h2>Давай <span class="accent">вспомним</span><br>наш год</h2>
+        <div class="hand">самые тёплые моменты ♡</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== ФОТО-ВОСПОМИНАНИЕ 1 ============== -->
+  <section class="slide" data-slide="memory-photo-1">
+    <div class="stage">
+      <div class="gallery-wrap stagger">
+        <div class="gallery">
+          <div class="photo memory-photo" data-src="memory1.jpg"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== ФОТО-ВОСПОМИНАНИЕ 2 ============== -->
+  <section class="slide" data-slide="memory-photo-2">
+    <div class="stage">
+      <div class="gallery-wrap stagger">
+        <div class="gallery">
+          <div class="photo memory-photo" data-src="memory2.jpg"></div>
         </div>
       </div>
     </div>
@@ -758,11 +790,11 @@ const config = {
       author: '— твой Ерося',
     },
     {
-      text: 'Мне с тобой <span class="accent">спокойно</span>. И смешно. И тепло. И ещё миллион всего, на что нет слов.',
+      text: 'С тобой я чувствую себя <span class="accent">на своём месте</span>. Там, где не нужно ничего доказывать и притворяться.',
       author: '— честное признание',
     },
     {
-      text: 'За этот год ты научила меня, что любить — это <span class="accent">не страшно</span>, а уютно.',
+      text: 'За этот год ты научила меня, что любить можно <span class="accent">искренне</span> — не думая о плохих последствиях. И что такое настоящая любовь.',
       author: '— спасибо тебе',
     },
     {
@@ -951,6 +983,19 @@ async function buildGallery() {
   galleryCap.textContent = config.photos[0]?.caption || '';
 }
 buildGallery();
+
+// --- Фото-воспоминания (одиночные фото на отдельных слайдах) ---
+document.querySelectorAll('.photo.memory-photo').forEach((el) => {
+  el.classList.add('active');
+  const src = el.dataset.src;
+  imageExists(src).then((ok) => {
+    if (ok) {
+      el.style.backgroundImage = `url("${src}")`;
+    } else {
+      el.classList.add('placeholder');
+    }
+  });
+});
 
 function showPhoto(i) {
   if (i < 0) i = config.photos.length - 1;

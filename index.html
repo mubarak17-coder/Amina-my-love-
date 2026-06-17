@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#fdf2f3" />
+<meta name="color-scheme" content="light only" />
+<meta name="supported-color-schemes" content="light" />
 <title>Аминося — 1 год вместе ♡</title>
 
 <!-- Google Fonts: заголовки — Cormorant Garamond, текст — Manrope, подписи — Caveat -->
@@ -49,7 +51,11 @@
      ============================================================ */
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
+  html {
+    scroll-behavior: smooth;
+    color-scheme: light;            /* запрещаем браузеру авто-инвертировать в dark mode */
+    background: var(--cream);
+  }
   body {
     font-family: var(--font-sans);
     color: var(--ink);
@@ -61,18 +67,25 @@
     overscroll-behavior: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    color-scheme: light;
   }
 
-  /* безопасные отступы под нотчи */
+  /* Сцена — flex-контейнер, центрирует контент по вертикали и горизонтали.
+     Это главный фикс: раньше контент прижимался к верху, и сердце на обложке
+     уезжало под URL-бар браузера. */
   .stage {
     position: relative;
     width: 100%;
     min-height: 100vh;
     min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     padding:
-      max(env(safe-area-inset-top), 16px)
+      max(env(safe-area-inset-top), 24px)
       max(env(safe-area-inset-right), 20px)
-      max(env(safe-area-inset-bottom), 16px)
+      max(env(safe-area-inset-bottom), 24px)
       max(env(safe-area-inset-left), 20px);
     overflow: hidden;
   }
@@ -128,10 +141,6 @@
   .slide {
     position: absolute;
     inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     text-align: center;
     opacity: 0;
     visibility: hidden;
@@ -140,8 +149,10 @@
       opacity var(--dur-med) var(--ease-soft),
       transform var(--dur-med) var(--ease-soft),
       visibility 0s linear var(--dur-med);
-    padding: clamp(24px, 6vw, 48px);
-    padding-bottom: 100px; /* место под навигацию */
+  }
+  /* Резерв снизу под навигацию — но не на обложке, где нав скрыта */
+  .slide:not([data-slide="cover"]) .stage {
+    padding-bottom: calc(max(env(safe-area-inset-bottom), 24px) + 96px);
   }
   .slide.active {
     opacity: 1;
